@@ -7,8 +7,8 @@ This is my work as as I learn more about Machine Learning.
 
 On my To-Do List
 
-| To Do | Notes | Date Started | Date Completed |
-|-------|-------|--------------|----------------|
+|  To Do   | Notes | Date Started | Date Completed |
+|----------|-------|--------------|----------------|
 |Clean Data|       |              |                |
-|       |       |              |                |
-|       |       |              |                |
+|          |       |              |                |
+|          |       |              |                |
