@@ -4,6 +4,9 @@
 Created on Wed Aug 26 15:13:26 2020
 
 @author: andrew
+
+Exploratory Data Analysis to Look at relationships between data and Survival
+
 """
 
 import numpy as np
@@ -18,23 +21,37 @@ pd.set_option('display.max_rows',15)
 pd.set_option('display.precision',3)
 pd.set_option('display.width',None)
 
-df = ttm.read_pickle('cleaned_df.pickle')
+cleaned_df = ttm.read_pickle('cleaned_df.pickle')
+raw_df = pd.read_csv('train.csv')
 
+#Compare Survival rate
+plt.subplots(figsize=(7, 5))
+sns.countplot(x='Survived', data=cleaned_df)
+plt.title('Class Distribution')
+plt.show()
 
+#Survival Rate based on Class
+fig, ax = plt.subplots(nrows=1, ncols=2)
+sns.countplot(x=cleaned_df[cleaned_df.Survived == 1]['Pclass'], ax=ax[0], label='Survived')
+sns.countplot(x=cleaned_df[cleaned_df.Survived == 0]['Pclass'], ax=ax[1])
+ax[0].set_title('Survived')
+ax[1].set_title('Deceased')
+plt.title('Passenger Class Distribution')
 
+#Survival Rate based on Sex
+plt.subplots(figsize=(7,5))
+sns.barplot(x='Sex', y='Survived', data=cleaned_df, ci=None)
+plt.title('Gender Distribution')
 
-#Average Age of Histograms show that we can estimate the age of the
-#unknown passengers
-no_null_age = df[df['Age'].notnull()]
-first_class = no_null_age[no_null_age.Pclass == 1]['Age']
-second_class = no_null_age[no_null_age.Pclass == 2]['Age']
-third_class = no_null_age[no_null_age.Pclass == 3]['Age']
+#Survival based on Title
+plt.subplots(figsize=(7,5))
+sns.barplot(x='Title', y='Survived', data=cleaned_df, ci=None)
+plt.title('Title Distribution')
 
-kwargs = dict(alpha=0.5, bins=100, density=True, stacked=True)
-plt.hist(first_class, label='First Class', color='g', **kwargs)
-plt.hist(second_class, label='Second Class', color='r', **kwargs)
-plt.hist(third_class, label='Third Class', color='b', **kwargs)
-
+#Surival based on Embarked location
+plt.subplots(figsize=(7,5))
+sns.barplot(x='Embarked', y='Survived', data=cleaned_df, ci=None)
+plt.title('Survival based on Embarked location')
 
 if __name__ == '__main__':
     pass    
