@@ -55,6 +55,8 @@ def sex_to_number(sex):
         return 1
     else:
         return 0
+    
+    ###THERE IS A WAY TO DO THIS IN SciKitLearn! LabelEncoder! Research this.
                 
            
 pd.set_option('display.max_columns',None)
@@ -78,50 +80,96 @@ df = pd.DataFrame(df[['PassengerId', 'Survived', 'Pclass', 'Sex', 'Age', 'SibSp'
        'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked', 'Title',
        'First_name','Last_Name']])
 
+df.Title = df.Title.str.strip()
 
+
+
+def change_title(df):
+    """
     
-#create df with numerical data only...
+
+    Parameters
+    ----------
+    df : Dataframe
+
+    Returns
+    -------
+    new_title : Series with converted Title Values
+        
+
+    """
+    title_dict = {
+        'Don' : 'Royalty',
+        'Rev' : 'Officer',
+        'Dr' : 'Officer',
+        'Mme' : 'Royalty',
+        'Ms' : 'Miss',
+        'Major' : 'Officer',
+        'Lady' : 'Royalty',
+        'Sir' : 'Royalty',
+        'Mlle' : 'Royalty',
+        'Col' : 'Officer',
+        'Capt' : 'Officer',
+        'the Countess' : 'Royalty',
+        'Jonkheer' : 'Royalty',
+        'Mr' : 'Mr',
+        'Mrs' : 'Mrs',
+        'Master' : 'Master',
+        'Miss' : 'Miss'
+        }
+    
+    new_title = df.Title.map(title_dict)
+    
+    return new_title
+
+df.Title = change_title(df)
+
+
+def young_lady(df):
+    
+    is_young = []
+    
+    for index, title in df.Title.items():
+        if title == 'Miss' and 0 < df.Parch.iloc[index] < 3:
+            is_young.append(1)
+        else:
+            is_young.append(0)
+    
+    return is_young
+
+
+df['young_lady'] = young_lady(df)
+
+
+
+"""    
+#Set nan age for remaining according to class average
+There is a way to 
 df.Sex = df.Sex.apply(sex_to_number) 
 age_by_class_mean = df.groupby(['Pclass'])['Age'].mean()
 
-df.loc[df2['Pclass'] == 1,'Age'] = df.loc[df2['Pclass'] == 1,'Age'].fillna(
+df.loc[df['Pclass'] == 1,'Age'] = df.loc[df['Pclass'] == 1,'Age'].fillna(
     value= age_by_class_mean[1])
-df.loc[df2['Pclass'] == 2,'Age'] = df.loc[df2['Pclass'] == 2,'Age'].fillna(
+df.loc[df['Pclass'] == 2,'Age'] = df.loc[df['Pclass'] == 2,'Age'].fillna(
     value= age_by_class_mean[2])
-df.loc[df2['Pclass'] == 3,'Age'] = df.loc[df2['Pclass'] == 3,'Age'].fillna(
+df.loc[df['Pclass'] == 3,'Age'] = df.loc[df['Pclass'] == 3,'Age'].fillna(
     value= age_by_class_mean[3])
 
-ttm.write_pickle_df(df,'cleaned_df')
+THE ONE LINE BELOW REPLACES THE ABOVE FOUR LINES
+"""
+df.Age.fillna(df.groupby(['Pclass','Title','Sex','young_lady'])['Age'].transform('median'), inplace=True)
+
+#Drop any unnecessary Columns here:
+df.drop(columns=['Cabin', 'Ticket', 'young_lady', 'First_name', 'Last_Name'], inplace = True)
+df.dropna(axis = 0, subset=['Embarked'], how='all', inplace=True)
 
 
-'''
-df2 = pd.DataFrame(df[['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 
-                       'Fare']])
-df2.Sex = df2.Sex.apply(sex_to_number)
+if __name__ == '__main__':
+    ttm.write_pickle_df(df,'cleaned_df')
+    print('Cleaned data saved as cleaned_df.pickle')
 
 
-#Average Age of Histograms show that we can estimate the age of the
-#unknown passengers
-no_null_age = df[df['Age'].notnull()]
-first_class = no_null_age[no_null_age.Pclass == 1]['Age']
-second_class = no_null_age[no_null_age.Pclass == 2]['Age']
-third_class = no_null_age[no_null_age.Pclass == 3]['Age']
 
-kwargs = dict(alpha=0.5, bins=100, density=True, stacked=True)
-plt.hist(first_class, label='First Class', color='g', **kwargs)
-plt.hist(second_class, label='Second Class', color='r', **kwargs)
-plt.hist(third_class, label='Third Class', color='b', **kwargs)
-
-#Object with average ages by class
-
-age_by_class_mean = df2.groupby(['Pclass'])['Age'].mean()
-df2.loc[df2['Pclass'] == 1,'Age'] = df2.loc[df2['Pclass'] == 1,'Age'].fillna(
-    value= age_by_class_mean[1])
-df2.loc[df2['Pclass'] == 2,'Age'] = df2.loc[df2['Pclass'] == 2,'Age'].fillna(
-    value= age_by_class_mean[2])
-df2.loc[df2['Pclass'] == 3,'Age'] = df2.loc[df2['Pclass'] == 3,'Age'].fillna(
-    value= age_by_class_mean[3])
-'''
 
 
     
