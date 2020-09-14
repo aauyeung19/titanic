@@ -14,7 +14,7 @@ On my To-Do List
 |  To Do   | Notes | Date Started | Date Completed |
 |----------|-------|--------------|----------------|
 |RandomForest|       |              |                |
-|redo features|       |              |                |
+|redo features|Needs to look for other features. Maybe Cabin?|              |                |
 |          |       |              |                |
 
 
